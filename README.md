@@ -20,10 +20,10 @@ import matplotlib.pyplot as plt
 ```
 </br>
 
-## Input the symbol of the security whose option chain you want
+## Input the asset class and the symbol of the security whose option chain you want
 
 ```py
-
+asset_class = input("What asset class do you want? Equities or Index\n")
 security = input("For what security do you want an option chain?\n")
 ```
 
