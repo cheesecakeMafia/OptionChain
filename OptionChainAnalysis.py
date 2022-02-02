@@ -2,7 +2,6 @@
 import requests
 import pandas as pd
 import matplotlib.pyplot as plt
-from datetime import datetime
 import cufflinks as cf
 cf.set_config_file(offline=True)
 
