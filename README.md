@@ -1,4 +1,4 @@
-# OptionChain
+# Option Chain and its Analysis
 
 Used the nseindia.com/ to scrape the option chains of various securities into dictionary of pandas dataframes and doing some basic manipulations like plotting skew and term structure curves.
 
