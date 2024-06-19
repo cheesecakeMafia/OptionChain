@@ -97,6 +97,18 @@ def by_strike(optionchain, cutoff = 50):
 expiry_df = by_expiry(optionchain, cutoff = 100)
 strike_df = by_strike(optionchain, cutoff = 100)
 
+def strike_ATM():
+    m = []
+    a = 0
+    for i in range(len(strike_list)):
+        a = abs(underlying_ltp - strike_list[i])
+        m.append(a)
+        if a == min(m):
+            min_strike = strike_list[i]
+    return min_strike
+
+ATM = strike_ATM()
+
 # Define a function to plot the Skew of call and put options for a given expiry 
 def plot_graph_expiry(options, expiry=0):
     plt.figure(figsize=(16,9))
@@ -113,7 +125,7 @@ def plot_graph_expiry(options, expiry=0):
     plt.show();
     
 # Define a function to plot the term structure of a particular strike 
-def plot_graph_strike(options, strike=38000):
+def plot_graph_strike(options, strike=ATM):
     plt.figure(figsize=(16,9))
     options[strike]["Expiry"] = pd.to_datetime(options[strike]["Expiry"])
     options[strike] = options[strike].drop(options[strike][(options[strike]["Call IV"] == 0) | (options[strike]["Put IV"] == 0)].index)
@@ -127,5 +139,5 @@ def plot_graph_strike(options, strike=38000):
     plt.show();
     
 plot_graph_expiry(expiry_df, 0)
-plot_graph_strike(strike_df, 38000)
+plot_graph_strike(strike_df)
 print(expiry_df[0])
