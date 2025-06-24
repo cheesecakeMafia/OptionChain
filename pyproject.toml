@@ -1,0 +1,15 @@
+[project]
+name = "optionchain"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "cufflinks>=0.17.3",
+    "ipykernel>=6.29.5",
+    "matplotlib>=3.10.3",
+    "pandas>=2.3.0",
+    "pytest>=8.4.1",
+    "requests>=2.32.4",
+    "scipy>=1.16.0",
+]

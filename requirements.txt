@@ -1,0 +1,7 @@
+requests
+pandas
+cufflinks
+matplotlib
+scipy
+ipykernel
+pytest
