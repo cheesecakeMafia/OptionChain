@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Optional
+from typing import Any
 
 from .data_fetcher import NSEOptionFetcher
 from .models import OptionChain
@@ -11,8 +11,7 @@ from .visualization import OptionChainVisualizer
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -24,9 +23,9 @@ class OptionChainAnalyzer:
         """Initialize the analyzer with data fetcher and visualizer."""
         self.fetcher = NSEOptionFetcher()
         self.visualizer = OptionChainVisualizer()
-        self.current_chain: Optional[OptionChain] = None
+        self.current_chain: OptionChain | None = None
 
-    def analyze_symbol(self, symbol: str, oi_cutoff: int = 100) -> Optional[OptionChain]:
+    def analyze_symbol(self, symbol: str, oi_cutoff: int = 100) -> OptionChain | None:
         """Analyze option chain for a given symbol.
 
         Args:
@@ -51,7 +50,9 @@ class OptionChainAnalyzer:
 
         # Apply OI filter
         filtered_chain = option_chain.filter_by_oi(oi_cutoff)
-        logger.info(f"After OI filter ({oi_cutoff}): {len(filtered_chain.data)} records")
+        logger.info(
+            f"After OI filter ({oi_cutoff}): {len(filtered_chain.data)} records"
+        )
 
         self.current_chain = filtered_chain
         return filtered_chain
@@ -71,10 +72,10 @@ class OptionChainAnalyzer:
             expiry_data=expiry_data,
             expiry_index=expiry_index,
             underlying_price=self.current_chain.underlying_price,
-            title=f"{self.current_chain.security} - Volatility Skew"
+            title=f"{self.current_chain.security} - Volatility Skew",
         )
 
-    def plot_term_structure(self, strike: Optional[float] = None) -> None:
+    def plot_term_structure(self, strike: float | None = None) -> None:
         """Plot term structure for the current option chain.
 
         Args:
@@ -96,13 +97,13 @@ class OptionChainAnalyzer:
                 expiry_info = self.current_chain.data[
                     self.current_chain.data["Strike"] == s
                 ]["Expiry"].values
-                df["Expiry"] = expiry_info[:len(df)]
+                df["Expiry"] = expiry_info[: len(df)]
                 break
 
         self.visualizer.plot_term_structure(
             strike_data=strike_data,
             strike=strike,
-            title=f"{self.current_chain.security} - Term Structure (Strike: {strike})"
+            title=f"{self.current_chain.security} - Term Structure (Strike: {strike})",
         )
 
     def plot_open_interest_analysis(self, expiry_index: int = 0) -> None:
@@ -116,8 +117,7 @@ class OptionChainAnalyzer:
             return
 
         self.visualizer.plot_open_interest_analysis(
-            option_chain=self.current_chain,
-            expiry_index=expiry_index
+            option_chain=self.current_chain, expiry_index=expiry_index
         )
 
     def get_summary(self) -> dict[str, Any]:
@@ -149,7 +149,9 @@ def main() -> None:
     """Main function for command-line usage."""
     try:
         # Get user input
-        security = input("For what security do you want an option chain? ").strip().upper()
+        security = (
+            input("For what security do you want an option chain? ").strip().upper()
+        )
 
         if not security:
             print("Please provide a valid security symbol.")
@@ -167,12 +169,12 @@ def main() -> None:
 
         # Display summary
         summary = analyzer.get_summary()
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print("OPTION CHAIN SUMMARY")
-        print("="*50)
+        print("=" * 50)
         for key, value in summary.items():
             print(f"{key.replace('_', ' ').title()}: {value}")
-        print("="*50)
+        print("=" * 50)
 
         # Create visualizations
         print("\nGenerating visualizations...")

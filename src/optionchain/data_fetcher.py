@@ -17,11 +17,11 @@ logger = logging.getLogger(__name__)
 
 class NSEOptionFetcher:
     """Fetches option chain data from NSE India.
-    
+
     WARNING: This implementation is no longer functional as NSE India has
     updated their API endpoints to use dynamic URLs with additional security
     measures. The static BASE_URL approach no longer works.
-    
+
     This class is maintained for educational and reference purposes only.
     """
 
@@ -70,7 +70,7 @@ class NSEOptionFetcher:
 
     def fetch_option_chain(self, symbol: str) -> OptionChain | None:
         """Fetch option chain data for a given symbol.
-        
+
         WARNING: This method is no longer functional due to NSE API changes.
         NSE India has implemented dynamic API endpoints that require additional
         authentication and session management that this implementation does not support.
@@ -83,7 +83,7 @@ class NSEOptionFetcher:
         """
         symbol = symbol.upper()
         url = f"{self.BASE_URL}?symbol={symbol}"
-        
+
         logger.warning(
             f"NSE API endpoint is deprecated. Cannot fetch data for {symbol}. "
             "NSE India has updated their API to use dynamic endpoints that require "
@@ -102,9 +102,11 @@ class NSEOptionFetcher:
             response.raise_for_status()
 
             # Check if response is JSON
-            content_type = response.headers.get('content-type', '')
-            if 'application/json' not in content_type:
-                logger.error(f"NSE API returned non-JSON response for {symbol}. Content-Type: {content_type}")
+            content_type = response.headers.get("content-type", "")
+            if "application/json" not in content_type:
+                logger.error(
+                    f"NSE API returned non-JSON response for {symbol}. Content-Type: {content_type}"
+                )
                 return None
 
             data = response.json()
@@ -112,7 +114,9 @@ class NSEOptionFetcher:
 
         except requests.RequestException as e:
             logger.error(f"Failed to fetch option chain for {symbol}: {e}")
-            logger.error("This is expected as NSE has deprecated the static API endpoint.")
+            logger.error(
+                "This is expected as NSE has deprecated the static API endpoint."
+            )
             return None
         except (KeyError, ValueError) as e:
             logger.error(f"Failed to parse response data for {symbol}: {e}")
