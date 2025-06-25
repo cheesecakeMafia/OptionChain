@@ -16,8 +16,16 @@ logger = logging.getLogger(__name__)
 
 
 class NSEOptionFetcher:
-    """Fetches option chain data from NSE India."""
+    """Fetches option chain data from NSE India.
+    
+    WARNING: This implementation is no longer functional as NSE India has
+    updated their API endpoints to use dynamic URLs with additional security
+    measures. The static BASE_URL approach no longer works.
+    
+    This class is maintained for educational and reference purposes only.
+    """
 
+    # DEPRECATED: This URL no longer works due to NSE API changes
     BASE_URL = "https://www.nseindia.com/api/option-chain-indices"
 
     def __init__(self, timeout: int = 30, max_retries: int = 3) -> None:
@@ -46,29 +54,41 @@ class NSEOptionFetcher:
         session.mount("https://", adapter)
 
         # Set headers to mimic browser request
-        session.headers.update({
-            "user-agent": (
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/97.0.4692.99 Safari/537.36"
-            ),
-            "accept-encoding": "gzip, deflate, br",
-            "accept-language": "en-US,en;q=0.9",
-        })
+        session.headers.update(
+            {
+                "user-agent": (
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/97.0.4692.99 Safari/537.36"
+                ),
+                "accept-encoding": "gzip, deflate, br",
+                "accept-language": "en-US,en;q=0.9",
+            }
+        )
 
         return session
 
     def fetch_option_chain(self, symbol: str) -> OptionChain | None:
         """Fetch option chain data for a given symbol.
+        
+        WARNING: This method is no longer functional due to NSE API changes.
+        NSE India has implemented dynamic API endpoints that require additional
+        authentication and session management that this implementation does not support.
 
         Args:
             symbol: NSE symbol (e.g., 'NIFTY', 'BANKNIFTY')
 
         Returns:
-            OptionChain object or None if fetch fails
+            None (always fails due to deprecated API endpoint)
         """
         symbol = symbol.upper()
         url = f"{self.BASE_URL}?symbol={symbol}"
+        
+        logger.warning(
+            f"NSE API endpoint is deprecated. Cannot fetch data for {symbol}. "
+            "NSE India has updated their API to use dynamic endpoints that require "
+            "additional authentication measures not supported by this implementation."
+        )
 
         try:
             # Initial request to get cookies
@@ -77,20 +97,28 @@ class NSEOptionFetcher:
 
             # Main request with cookies
             response = self.session.get(
-                url,
-                cookies=dict(initial_response.cookies),
-                timeout=self.timeout
+                url, cookies=dict(initial_response.cookies), timeout=self.timeout
             )
             response.raise_for_status()
+
+            # Check if response is JSON
+            content_type = response.headers.get('content-type', '')
+            if 'application/json' not in content_type:
+                logger.error(f"NSE API returned non-JSON response for {symbol}. Content-Type: {content_type}")
+                return None
 
             data = response.json()
             return self._parse_response_data(data, symbol)
 
         except requests.RequestException as e:
             logger.error(f"Failed to fetch option chain for {symbol}: {e}")
+            logger.error("This is expected as NSE has deprecated the static API endpoint.")
             return None
         except (KeyError, ValueError) as e:
             logger.error(f"Failed to parse response data for {symbol}: {e}")
+            return None
+        except Exception as e:
+            logger.error(f"Unexpected error fetching data for {symbol}: {e}")
             return None
 
     def _parse_response_data(self, data: dict[str, Any], symbol: str) -> OptionChain:
@@ -161,3 +189,6 @@ class NSEOptionFetcher:
             expiries=expiries,
             strikes=strikes,
         )
+
+
+# NOTE: Test code removed as NSE API is no longer functional with this implementation

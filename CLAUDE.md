@@ -8,9 +8,12 @@ This is a Python-based option chain analysis tool that scrapes NSE India's optio
 
 ## Architecture
 
-- **OptionChainAnalysis.py**: Core module containing the main analysis logic, data scraping from NSE India API, and plotting functions
-- **main.py**: Entry point module (currently minimal placeholder)
-- **OptionChain.ipynb**: Jupyter notebook for interactive analysis
+- **src/optionchain/**: Modern Python package with clean separation of concerns
+  - **analysis.py**: Core analyzer class with main orchestration logic
+  - **data_fetcher.py**: NSE India API integration with retry logic and error handling
+  - **models.py**: Data models (OptionChain, OptionData) with type hints
+  - **visualization.py**: Professional matplotlib-based plotting utilities
+- **main.py**: Comprehensive example implementation with interactive demos
 - Uses pandas DataFrames for option chain data manipulation
 - Matplotlib and cufflinks for visualization
 - Requests library with session management for NSE India API scraping
@@ -41,11 +44,11 @@ uv run pytest tests/test_specific.py
 
 ### Development
 ```bash
-# Run Jupyter notebook
-uv run jupyter notebook OptionChain.ipynb
+# Run the comprehensive example script
+uv run python main.py
 
-# Run the main analysis script
-uv run python OptionChainAnalysis.py
+# Run the package CLI directly
+uv run python -m optionchain
 ```
 
 ## Key Functions and Data Flow
